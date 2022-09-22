@@ -7,6 +7,7 @@ import {
 } from "./factories/factory";
 import {
   disconnectDatabase,
+  insertPolarizedVideo,
   insertUniqueVideo,
   truncateAll,
 } from "./factories/dbFactory";
@@ -47,6 +48,13 @@ describe("POST to / inserting a new recommendation", () => {
     const id = randomId() + "/upvote";
     const { status } = await supertest(app).post(`/recommendations/${id}`);
     expect(status).toBe(404);
+  });
+
+  it("sending an downvote request to a low score video expecting removal from the database", async () => {
+    await insertPolarizedVideo(false);
+    const id = "1/downvote";
+    const { status } = await supertest(app).post(`/recommendations/${id}`);
+    expect(status).toBe(200);
   });
 });
 
