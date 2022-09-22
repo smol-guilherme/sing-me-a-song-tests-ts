@@ -1,19 +1,19 @@
 import app from "../src/app";
 import supertest from "supertest";
-import { prisma } from "../src/database";
 import {
   randomId,
   randomVideoString,
-  uniqueVideoString,
+  uniqueVideoBody,
 } from "./factories/factory";
+import { disconnectDatabase, truncateAll } from "./factories/dbFactory";
 
 beforeEach(async () => {
-  // truncateAll();
+  truncateAll();
 });
 
 describe("POST to / inserting a new recommendation", () => {
   it("inserting the same object twice for conflicts", async () => {
-    const body = uniqueVideoString();
+    const body = uniqueVideoBody();
     await supertest(app).post("/").send(body);
     const { status } = await supertest(app).post("/").send(body);
     expect(status).toBe(409);
@@ -26,7 +26,7 @@ describe("POST to / inserting a new recommendation", () => {
   });
 
   it("sending an upvote request to id 1 expecting success", async () => {
-    const body = uniqueVideoString();
+    const body = uniqueVideoBody();
     await supertest(app).post("/").send(body);
     const id = "1/upvote";
     const { status } = await supertest(app).post(`/${id}`);
@@ -34,7 +34,7 @@ describe("POST to / inserting a new recommendation", () => {
   });
 
   it("sending an downvote request to id 1 expecting success", async () => {
-    const body = uniqueVideoString();
+    const body = uniqueVideoBody();
     await supertest(app).post("/").send(body);
     const id = "1/downvote";
     const { status } = await supertest(app).post(`/${id}`);
@@ -49,5 +49,5 @@ describe("POST to / inserting a new recommendation", () => {
 });
 
 afterAll(async () => {
-  await prisma.$disconnect();
+  await disconnectDatabase();
 });
