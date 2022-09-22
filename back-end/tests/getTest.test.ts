@@ -6,7 +6,7 @@ import {
   insertPolarizedVideo,
   insertUniqueVideo,
   randomNumberOfInserts,
-  randomNumberOfPopular,
+  insertNumberOfPopular,
   truncateAll,
 } from "./factories/dbFactory";
 
@@ -67,7 +67,7 @@ describe("testing GET requests for the API services", () => {
   });
 
   it("requesting more than one video when there are many with high scores", async () => {
-    const amount = Math.floor((await randomNumberOfPopular(8)) / 2);
+    const amount = Math.floor((await insertNumberOfPopular(8)) / 2);
     const response = await supertest(app).get(`/recommendations/top/${amount}`);
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Array);

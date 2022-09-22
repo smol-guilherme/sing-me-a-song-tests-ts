@@ -17,12 +17,11 @@ export async function randomNumberOfInserts(max: number) {
   return maxNumber;
 }
 
-export async function randomNumberOfPopular(max: number): Promise<number> {
-  const maxNumber = Math.floor(Math.random() * max);
-  for (let i = 0; i < maxNumber; i++) {
+export async function insertNumberOfPopular(max: number): Promise<number> {
+  for (let i = 0; i < max; i++) {
     await insertPolarizedVideo(true, i + 1);
   }
-  return maxNumber;
+  return max;
 }
 
 export async function insertUniqueVideo() {
