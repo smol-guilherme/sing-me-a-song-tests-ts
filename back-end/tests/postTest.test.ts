@@ -14,7 +14,7 @@ beforeEach(async () => {
 describe("POST to / inserting a new recommendation", () => {
   it("inserting the same object twice for conflicts", async () => {
     const body = uniqueVideoString();
-    await supertest(app).post("/tests").send(body);
+    await supertest(app).post("/").send(body);
     const { status } = await supertest(app).post("/").send(body);
     expect(status).toBe(409);
   });
@@ -27,13 +27,15 @@ describe("POST to / inserting a new recommendation", () => {
 
   it("sending an upvote request to id 1 expecting success", async () => {
     const body = uniqueVideoString();
-    await supertest(app).post("/tests").send(body);
+    await supertest(app).post("/").send(body);
     const id = "1/upvote";
     const { status } = await supertest(app).post(`/${id}`);
     expect(status).toBe(200);
   });
 
   it("sending an downvote request to id 1 expecting success", async () => {
+    const body = uniqueVideoString();
+    await supertest(app).post("/").send(body);
     const id = "1/downvote";
     const { status } = await supertest(app).post(`/${id}`);
     expect(status).toBe(200);
