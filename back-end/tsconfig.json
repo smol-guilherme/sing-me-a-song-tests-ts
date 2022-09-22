@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
-    "module": "es6",
+    "module": "commonjs",
+    "lib": ["ES2022"],
     "moduleResolution": "node",
-    "outDir": "dist"
+    "outDir": "./dist",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "ts-node": {
     "esm": true
