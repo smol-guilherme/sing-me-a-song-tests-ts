@@ -31,3 +31,11 @@ export function randomVideoBody(): CreateRecommendationData {
     youtubeLink: randomVideoString(),
   };
 }
+
+export function polarizedScore(positive: boolean): number {
+  const signal = () => {
+    if (positive) return 1;
+    return -1;
+  };
+  return signal() * Math.floor(Math.random() * 50);
+}

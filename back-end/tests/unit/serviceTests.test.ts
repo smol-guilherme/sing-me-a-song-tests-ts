@@ -3,7 +3,11 @@ import {
   recommendationService,
 } from "../../src/services/recommendationsService";
 import { recommendationRepository } from "../../src/repositories/recommendationRepository";
-import { fullVideoBody, uniqueVideoBody } from "../factories/factory";
+import {
+  fullVideoBody,
+  polarizedScore,
+  uniqueVideoBody,
+} from "../factories/factory";
 import { conflictError, notFoundError } from "../../src/utils/errorUtils";
 
 beforeEach(async () => {
@@ -60,11 +64,11 @@ describe("recommendation services unit tests", () => {
     await recommendationService.upvote(id);
     expect(recommendationRepository.find).toBeCalled();
     expect(recommendationRepository.updateScore).toBeCalled();
-    // await expect(callback).rejects.toEqual(notFoundError());
   });
 
   it("mock a failed upvote", async () => {
     const id = 1;
+    const data = fullVideoBody();
     jest
       .spyOn(recommendationRepository, "find")
       .mockImplementationOnce((): any => null);
@@ -72,38 +76,46 @@ describe("recommendation services unit tests", () => {
       .spyOn(recommendationRepository, "updateScore")
       .mockImplementationOnce((): any => {
         return {
-          ...fullVideoBody(),
-          score: fullVideoBody().score + 1,
+          ...data,
+          score: data.score + 1,
         };
       });
 
     const promise = recommendationService.upvote(id);
     expect(recommendationRepository.find).toBeCalled();
     await expect(promise).rejects.toEqual(notFoundError());
-    // expect(recommendationRepository.updateScore).toBeCalled();
   });
 
   it("mock a succesful downvote with deletion", async () => {
     const id = 1;
+    const data = fullVideoBody();
+    data.score = polarizedScore(false);
     jest
       .spyOn(recommendationRepository, "find")
       .mockImplementationOnce((): any => {
         return {
-          ...fullVideoBody(),
+          ...data,
         };
       });
     jest
       .spyOn(recommendationRepository, "updateScore")
       .mockImplementationOnce((): any => {
         return {
-          ...fullVideoBody(),
-          score: fullVideoBody().score + 1,
+          ...data,
+          score: data.score - 1,
+        };
+      });
+    jest
+      .spyOn(recommendationRepository, "remove")
+      .mockImplementationOnce((): any => {
+        return {
+          ...data,
         };
       });
 
     await recommendationService.downvote(id);
     expect(recommendationRepository.find).toBeCalled();
     expect(recommendationRepository.updateScore).toBeCalled();
-    // await expect(callback).rejects.toEqual(notFoundError());
+    expect(recommendationRepository.remove).toBeCalled();
   });
 });

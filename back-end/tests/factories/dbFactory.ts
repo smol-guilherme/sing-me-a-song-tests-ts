@@ -1,5 +1,5 @@
 import { prisma } from "../../src/database";
-import { randomVideoBody, uniqueVideoBody } from "./factory";
+import { polarizedScore, randomVideoBody, uniqueVideoBody } from "./factory";
 
 export async function truncateAll() {
   await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY;`;
@@ -38,12 +38,4 @@ export async function insertPolarizedVideo(flag: boolean, id = 1) {
       score: polarizedScore(flag),
     },
   });
-}
-
-function polarizedScore(positive: boolean): number {
-  const signal = () => {
-    if (positive) return 1;
-    return -1;
-  };
-  return signal() * Math.floor(Math.random() * 50);
 }
