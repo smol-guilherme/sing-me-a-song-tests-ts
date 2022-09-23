@@ -118,4 +118,31 @@ describe("recommendation services unit tests", () => {
     expect(recommendationRepository.updateScore).toBeCalled();
     expect(recommendationRepository.remove).toBeCalled();
   });
+
+  it("mock a successful request for all links", async () => {
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementationOnce((): any => {
+        return [];
+      });
+
+    const response = await recommendationService.get();
+    expect(recommendationRepository.findAll).toBeCalled();
+    expect(response).toBeInstanceOf(Array);
+    expect(response.length).toBeLessThanOrEqual(10);
+  });
+
+  it("mock a successful request for the most popular links", async () => {
+    const topQte = 5;
+    jest
+      .spyOn(recommendationRepository, "getAmountByScore")
+      .mockImplementationOnce((): any => {
+        return [];
+      });
+
+    const response = await recommendationService.getTop(topQte);
+    expect(recommendationRepository.getAmountByScore).toBeCalled();
+    expect(response).toBeInstanceOf(Array);
+    expect(response.length).toBeLessThanOrEqual(topQte);
+  });
 });
