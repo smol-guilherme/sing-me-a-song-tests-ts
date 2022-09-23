@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/server.ts",
-    "test": "dotenv -e .env.test prisma migrate dev && dotenv -e .env.test jest ./unit/serviceTests.test.ts -- -i --watchAll"
+    "test": "dotenv -e .env.test prisma migrate dev && dotenv -e .env.test jest -- -i --watchAll"
   },
   "keywords": [],
   "author": "",
