@@ -4,6 +4,7 @@ import {
 } from "../../src/services/recommendationsService";
 import { recommendationRepository } from "../../src/repositories/recommendationRepository";
 import {
+  arrayOfVideos,
   fullVideoBody,
   polarizedScore,
   uniqueVideoBody,
@@ -33,7 +34,7 @@ describe("recommendation services unit tests", () => {
       .spyOn(recommendationRepository, "findByName")
       .mockImplementationOnce((): any => {
         return {
-          ...fullVideoBody(data),
+          ...fullVideoBody(true, data),
         };
       });
     const promise = recommendationService.insert(data);
@@ -144,5 +145,44 @@ describe("recommendation services unit tests", () => {
     expect(recommendationRepository.getAmountByScore).toBeCalled();
     expect(response).toBeInstanceOf(Array);
     expect(response.length).toBeLessThanOrEqual(topQte);
+  });
+
+  it("mock a successful random recommendation request", async () => {
+    const expectedData = arrayOfVideos();
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementationOnce((): any => {
+        return expectedData;
+      });
+
+    const response = await recommendationService.getRandom();
+    expect(recommendationRepository.findAll).toBeCalledTimes(1);
+    expect(response).toBeInstanceOf(Object);
+  });
+
+  it("mock a successful random recommendation when no videos pass the score threshold", async () => {
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementationOnce((): any => {
+        return [];
+      });
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementationOnce((): any => {
+        return [{ ...fullVideoBody(), score: 1 }];
+      });
+
+    const response = await recommendationService.getRandom();
+    expect(recommendationRepository.findAll).toBeCalledTimes(2);
+    expect(response).toBeInstanceOf(Object);
+  });
+
+  it("mock a failed random recommendation request", async () => {
+    jest.spyOn(recommendationRepository, "findAll").mockResolvedValue([]);
+
+    await expect(recommendationService.getRandom()).rejects.toEqual(
+      notFoundError()
+    );
+    expect(recommendationRepository.findAll).toBeCalledTimes(2);
   });
 });

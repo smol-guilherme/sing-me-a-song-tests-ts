@@ -13,10 +13,18 @@ export function uniqueVideoBody(): CreateRecommendationData {
   };
 }
 
-export function fullVideoBody(data?: CreateRecommendationData): Recommendation {
+export function fullVideoBody(
+  unique: boolean = true,
+  data?: CreateRecommendationData
+): Recommendation {
+  const setData = () => {
+    if (data) return data;
+    if (unique) return uniqueVideoBody();
+    return randomVideoBody();
+  };
   return {
     id: Math.ceil(Math.random() * 5),
-    ...(data || { ...uniqueVideoBody() }),
+    ...setData(),
     score: Math.ceil(Math.random() * 50),
   };
 }
@@ -38,4 +46,12 @@ export function polarizedScore(positive: boolean): number {
     return -1;
   };
   return signal() * Math.floor(Math.random() * 50);
+}
+
+export function arrayOfVideos(size: number = 5) {
+  const data = [];
+  for (let i = 0; i < size; i++) {
+    data.push(fullVideoBody(false));
+  }
+  return data;
 }
