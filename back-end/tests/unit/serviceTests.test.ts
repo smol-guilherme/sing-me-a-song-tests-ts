@@ -3,8 +3,8 @@ import {
   recommendationService,
 } from "../../src/services/recommendationsService";
 import { recommendationRepository } from "../../src/repositories/recommendationRepository";
-import { uniqueVideoBody } from "../factories/factory";
-import { conflictError } from "../../src/utils/errorUtils";
+import { fullVideoBody, uniqueVideoBody } from "../factories/factory";
+import { conflictError, notFoundError } from "../../src/utils/errorUtils";
 
 beforeEach(async () => {
   jest.resetAllMocks();
@@ -29,16 +29,81 @@ describe("recommendation services unit tests", () => {
       .spyOn(recommendationRepository, "findByName")
       .mockImplementationOnce((): any => {
         return {
-          id: 1,
-          ...data,
-          score: 10,
+          ...fullVideoBody(data),
         };
       });
-
-    const callback = recommendationService.insert(data);
-    await expect(callback).rejects.toEqual(
+    const promise = recommendationService.insert(data);
+    await expect(promise).rejects.toEqual(
       conflictError("Recommendations names must be unique")
     );
     expect(recommendationRepository.create).not.toBeCalled();
+  });
+
+  it("mock a succesful upvote", async () => {
+    const id = 1;
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockImplementationOnce((): any => {
+        return {
+          ...fullVideoBody(),
+        };
+      });
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockImplementationOnce((): any => {
+        return {
+          ...fullVideoBody(),
+          score: fullVideoBody().score + 1,
+        };
+      });
+
+    await recommendationService.upvote(id);
+    expect(recommendationRepository.find).toBeCalled();
+    expect(recommendationRepository.updateScore).toBeCalled();
+    // await expect(callback).rejects.toEqual(notFoundError());
+  });
+
+  it("mock a failed upvote", async () => {
+    const id = 1;
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockImplementationOnce((): any => null);
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockImplementationOnce((): any => {
+        return {
+          ...fullVideoBody(),
+          score: fullVideoBody().score + 1,
+        };
+      });
+
+    const promise = recommendationService.upvote(id);
+    expect(recommendationRepository.find).toBeCalled();
+    await expect(promise).rejects.toEqual(notFoundError());
+    // expect(recommendationRepository.updateScore).toBeCalled();
+  });
+
+  it("mock a succesful downvote with deletion", async () => {
+    const id = 1;
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockImplementationOnce((): any => {
+        return {
+          ...fullVideoBody(),
+        };
+      });
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockImplementationOnce((): any => {
+        return {
+          ...fullVideoBody(),
+          score: fullVideoBody().score + 1,
+        };
+      });
+
+    await recommendationService.downvote(id);
+    expect(recommendationRepository.find).toBeCalled();
+    expect(recommendationRepository.updateScore).toBeCalled();
+    // await expect(callback).rejects.toEqual(notFoundError());
   });
 });
