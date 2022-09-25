@@ -39,5 +39,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "^5.38.0",
+    "cypress": "^10.8.0",
+    "eslint-plugin-cypress": "^2.12.1"
   }
 }
