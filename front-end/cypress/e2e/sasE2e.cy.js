@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 const URL = "http://localhost:3000";
+const API_URL = process.env.REACT_APP_API_BASE_URL;
 
 describe("E2E tests", () => {
   const visit = () => cy.visit(URL);
@@ -20,6 +21,7 @@ describe("E2E tests", () => {
       cy.get("input[placeholder='https://youtu.be/...']").type(
         "https://www.youtube.com/watch?v=fu2QzRY8IUI"
       );
+      cy.wait(500);
       cy.get("button").click();
       cy.intercept("POST", `/recommendations`).then(() => {
         cy.contains("Tacica song slaps").should("be.visible");
@@ -33,6 +35,27 @@ describe("E2E tests", () => {
       cy.get("[data-cy=upvote]").click();
       cy.wait(1500);
       cy.get("[data-cy=downvote]").click();
+    });
+  });
+
+  it("request a random song from the database", () => {
+    visit().then(() => {
+      cy.contains("Random").click();
+      cy.url().should("equal", `${URL}/random`);
+    });
+  });
+
+  it("request the most popular videos from the database", () => {
+    visit().then(() => {
+      cy.contains("Top").click();
+      cy.url().should("equal", `${URL}/top`);
+    });
+  });
+
+  it("return to the homepage", () => {
+    visit().then(() => {
+      cy.contains("Home").click();
+      cy.url().should("equal", `${URL}/`);
     });
   });
 });
