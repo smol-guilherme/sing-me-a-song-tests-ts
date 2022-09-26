@@ -24,15 +24,19 @@ describe("E2E tests", () => {
     cy.contains("Tacica song slaps").should("be.visible");
   });
 
-  it("upvotes and downvotes the first post from the page", () => {
+  it("upvotesthe first post from the page", () => {
     visit();
-    cy.wait(500);
+    cy.wait(125);
     cy.intercept("POST", "/recommendations/**").as("clickArrow");
     cy.get("[data-cy=upvote]").first().click();
     cy.wait("@clickArrow").its("response.statusCode").should("eq", 200);
+  });
+
+  it("downvotes the first post from the page", () => {
+    visit();
+    cy.wait(125);
     cy.intercept("POST", "/recommendations/**").as("clickArrow");
     cy.get("[data-cy=downvote]").first().click();
-    cy.wait("@clickArrow");
     cy.wait("@clickArrow").its("response.statusCode").should("eq", 200);
   });
 
