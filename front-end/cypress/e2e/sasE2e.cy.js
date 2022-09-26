@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { randomVideoBody } from "./factories/songFactory.js";
 
 const URL = "http://localhost:3000";
 
@@ -13,15 +14,14 @@ describe("E2E tests", () => {
 
   it("succeeds on inserting a new video entry", () => {
     visit();
-    cy.get("[data-cy=song-title]").type("Tacica song slaps");
-    cy.get("[data-cy=song-url]").type(
-      "https://www.youtube.com/watch?v=fu2QzRY8IUI"
-    );
+    const newInput = randomVideoBody();
+    cy.get("[data-cy=song-title]").type(newInput.name);
+    cy.get("[data-cy=song-url]").type(newInput.youtubeLink);
     cy.wait(125); // wait to assert the click won't fail due to random delays
     cy.intercept("POST", "/recommendations").as("insertRec");
     cy.get("button").first().click();
     cy.wait("@insertRec");
-    cy.contains("Tacica song slaps").should("be.visible");
+    cy.contains(newInput.name).should("be.visible");
   });
 
   it("upvotesthe first post from the page", () => {
