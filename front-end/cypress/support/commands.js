@@ -12,6 +12,9 @@
 // -- This is a parent command --
 // Cypress.Commands.add('login', (email, password) => { ... })
 //
+Cypress.Commands.add("resetDatabase", () => {
+  cy.request("POST", "http://localhost:5000/e2e/reset", {});
+});
 //
 // -- This is a child command --
 // Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })

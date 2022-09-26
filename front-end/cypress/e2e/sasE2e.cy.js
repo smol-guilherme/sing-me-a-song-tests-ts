@@ -6,6 +6,21 @@ const URL = "http://localhost:3000";
 describe("E2E tests", () => {
   const visit = () => cy.visit(URL);
 
+  beforeEach(async () => {
+    await cy.resetDatabase();
+  });
+
+  beforeEach(() => {
+    visit();
+    const newInput = randomVideoBody();
+    cy.get("[data-cy=song-title]").type(newInput.name);
+    cy.get("[data-cy=song-url]").type(newInput.youtubeLink);
+    cy.wait(125); // wait to assert the click won't fail due to random delays
+    cy.intercept("POST", "/recommendations").as("insertRec");
+    cy.get("button").first().click();
+    cy.wait("@insertRec");
+  });
+
   it("retrieves the videos from the api", async () => {
     visit();
     cy.intercept("GET", `/recommendations`).as("fetchRecs");
