@@ -21,7 +21,7 @@ describe("E2E tests", () => {
     cy.wait("@insertRec");
   });
 
-  it("retrieves the videos from the api", async () => {
+  it("retrieves the videos from the api", () => {
     visit();
     cy.intercept("GET", `/recommendations`).as("fetchRecs");
     cy.wait("@fetchRecs").its("response.statusCode").should("eq", 200);
