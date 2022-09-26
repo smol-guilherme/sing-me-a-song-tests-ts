@@ -5,7 +5,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/server.ts",
+    "start": "ts-node dist/src/server.js",
+    "build": "tsc --build",
+    "dev": "NODE_ENV=test nodemon src/server.ts",
     "test": "dotenv -e .env.test prisma migrate dev && dotenv -e .env.test jest -- -i --watchAll"
   },
   "keywords": [],

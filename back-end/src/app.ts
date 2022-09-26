@@ -10,7 +10,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/recommendations", recommendationRouter);
-app.use("/e2e", testRouter);
+if (process.env.NODE_ENV === "test") {
+  app.use("/e2e", testRouter);
+}
 app.use(errorHandlerMiddleware);
 
 export default app;
