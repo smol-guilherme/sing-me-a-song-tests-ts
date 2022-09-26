@@ -42,13 +42,16 @@ describe("E2E tests", () => {
     cy.contains("Random").click();
     cy.wait("@randomRec");
     cy.url().should("equal", `${URL}/random`);
-    cy.get("[data-cy=rec-component]").should("have.length", 1);
+    cy.get("[data-cy=rec-component]").should("have.length.of.at.least", 1);
   });
 
   it("request the most popular videos from the database", () => {
     visit();
+    cy.intercept("GET", `/recommendations/top/10`).as("getNTop");
     cy.contains("Top").click();
+    cy.wait("@getNTop");
     cy.url().should("equal", `${URL}/top`);
+    cy.get("[data-cy=rec-component]").should("have.length.of.at.most", 10);
   });
 
   it("return to the homepage", () => {
