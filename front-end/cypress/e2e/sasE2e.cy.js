@@ -21,10 +21,10 @@ describe("E2E tests", () => {
     cy.wait("@insertRec");
   });
 
-  it("retrieves the videos from the api", () => {
+  it("retrieves the videos from the api where there is no videos", () => {
     visit();
     cy.intercept("GET", `/recommendations`).as("fetchRecs");
-    cy.wait("@fetchRecs").its("response.statusCode").should("eq", 200);
+    cy.wait("@fetchRecs").its("response.statusCode").should("eq", 304);
   });
 
   it("succeeds on inserting a new video entry", () => {
@@ -91,36 +91,13 @@ describe("E2E tests", () => {
     cy.wait("@insertRec").its("response.statusCode").should("eq", 201);
     // Hitting like 6 times so it gets deleted
     cy.intercept("POST", "/recommendations/**").as("clickArrow");
-    cy.contains("The worst love song of all time")
-      .parent()
-      .find("[data-cy=downvote]")
-      .click()
-      .wait("@clickArrow");
-    cy.contains("The worst love song of all time")
-      .parent()
-      .find("[data-cy=downvote]")
-      .click()
-      .wait("@clickArrow");
-    cy.contains("The worst love song of all time")
-      .parent()
-      .find("[data-cy=downvote]")
-      .click()
-      .wait("@clickArrow");
-    cy.contains("The worst love song of all time")
-      .parent()
-      .find("[data-cy=downvote]")
-      .click()
-      .wait("@clickArrow");
-    cy.contains("The worst love song of all time")
-      .parent()
-      .find("[data-cy=downvote]")
-      .click()
-      .wait("@clickArrow");
-    cy.contains("The worst love song of all time")
-      .parent()
-      .find("[data-cy=downvote]")
-      .click()
-      .wait("@clickArrow");
+    for (let i = 0; i < 6; i++) {
+      cy.contains("The worst love song of all time")
+        .parent()
+        .find("[data-cy=downvote]")
+        .click()
+        .wait("@clickArrow");
+    }
     // Now waiting for the song to be removed
     cy.contains("The worst love song of all time").should("not.exist");
   });
