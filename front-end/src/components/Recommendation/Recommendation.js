@@ -43,7 +43,7 @@ export default function Recommendation({
   }, [errorDownvotingRecommendation]);
 
   return (
-    <Container>
+    <Container data-cy="rec-component">
       <Row>{name}</Row>
       <ReactPlayer url={youtubeLink} width="100%" height="100%" />
       <Row>
