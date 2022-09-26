@@ -61,7 +61,7 @@ describe("E2E tests", () => {
     cy.contains("Random").click();
     cy.wait("@randomRec");
     cy.url().should("equal", `${URL}/random`);
-    cy.get("[data-cy=rec-component]").should("have.length.of.at.least", 1);
+    cy.get("[data-cy=rec-component]").should("have.length.of.at.most", 1);
   });
 
   it("request the most popular videos from the database", () => {
